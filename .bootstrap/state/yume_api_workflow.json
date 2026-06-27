@@ -38,7 +38,7 @@
   },
   "45": {
     "inputs": {
-      "width": 1088,
+      "width": 1080,
       "height": 1920,
       "batch_size": 1
     },
@@ -66,23 +66,10 @@
     },
     "class_type": "VAEDecode"
   },
-  "34": {
-    "inputs": {
-      "model_name": "4xNomos8kDAT.safetensors"
-    },
-    "class_type": "UpscaleModelLoader"
-  },
-  "31": {
-    "inputs": {
-      "upscale_model": ["34", 0],
-      "image": ["33", 0]
-    },
-    "class_type": "ImageUpscaleWithModel"
-  },
   "38": {
     "inputs": {
       "filename_prefix": "anime-txt2img",
-      "images": ["31", 0]
+      "images": ["33", 0]
     },
     "class_type": "SaveImage"
   }

@@ -655,13 +655,19 @@ def cmd_list_workflows(args):
     print(f"  已缓存 {total} 个 workflow (更新于 {cat.get('updated', '?')})")
     print(f"{'='*70}")
     
-    # Also check for standalone API workflow file
+    # Check for standalone API workflow files
+    # ⭐ Default: 1080×1920 直出无upscale (X擦边女友专用)
     api_wf_path = STATE_DIR / "yume_api_workflow.json"
     if api_wf_path.exists():
         with open(api_wf_path) as f:
             api_wf = json.load(f)
         nodes = len(api_wf) if isinstance(api_wf, dict) else '?'
-        print(f"\n  [API] yume_api_workflow.json — novaAnimeXL_ilV170 ({nodes} nodes, 随时可用)")
+        has_upscale = any(
+            isinstance(n, dict) and n.get("class_type") in ("UpscaleModelLoader", "ImageUpscaleWithModel")
+            for n in api_wf.values()
+        ) if isinstance(api_wf, dict) else False
+        label = "含4x upscale ~31MB" if has_upscale else "1080×1920 直出无upscale ~2MB"
+        print(f"\n  ⭐ [默认] yume_api_workflow.json — X擦边女友专用 ({nodes} nodes, {label})")
         print(f"       用法: python .bootstrap/scripts/comfyui_helper.py generate --workflow-path .bootstrap/state/yume_api_workflow.json --prompt \"...\"")
     
     # Sort: by usage_count if available, else alphabetically
