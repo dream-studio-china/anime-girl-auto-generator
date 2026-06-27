@@ -53,6 +53,24 @@
 
 当前配置文件也包含 X API 凭据字段。未发布到 X 时可以保持为空。
 
+### 默认 Workflow 预设
+
+默认使用 **X擦边女友专用 (yume_no_girl_x)** — 1080×1920 直出无 upscale，~2-3MB，约 12s。
+
+| 预设 | 配置 | 大小 | 用时 | 适用 |
+|------|------|------|------|------|
+| ⭐ **轻量（默认）** | 1080×1920 · 无 upscale | ~2 MB | ~12s | Telegram 发送、快速出图 |
+| 高清 | 1080×1920 · 4xNomos8kDAT upscale | ~31 MB | ~40s | 需要高清晰度时 |
+
+生成示例：
+
+```bash
+# 默认（noscale）
+python .bootstrap/scripts/comfyui_helper.py generate \
+  --workflow-path .bootstrap/state/yume_api_workflow.json \
+  --prompt "1girl, anime style"
+```
+
 ### 2. 安装发布依赖
 
 只有需要发布到 X/Twitter 时才需要安装：
