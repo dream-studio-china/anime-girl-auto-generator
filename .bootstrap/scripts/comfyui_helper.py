@@ -521,15 +521,37 @@ def cmd_generate(args):
     config = load_config()
     server = config["comfyui_server"].rstrip("/")
     
-    # 1. Load workflow from cache (or extract from server)
+    # 1. Load workflow
+    wf_path = getattr(args, 'workflow_path', None)
     wf_name = getattr(args, 'workflow_name', None)
-    wf, meta = load_cached_workflow(name=wf_name, category="anime")
+    wf, meta = None, None
     
-    if wf is None:
-        # Fall back to server extraction
-        print("[info] 本地缓存无 API 格式 workflow，尝试从服务器提取...")
-        model_filter = getattr(args, 'model', None) or config.get("model_filter")
-        wf, meta = load_or_extract_workflow(server, model_filter, force_extract=True)
+    if wf_path:
+        # Direct API-format workflow file
+        wf_path = Path(wf_path)
+        if not wf_path.is_absolute():
+            wf_path = PROJECT_ROOT / wf_path
+        if not wf_path.exists():
+            print(f"✗ Workflow 文件不存在: {wf_path}")
+            return 1
+        with open(wf_path) as f:
+            data = json.load(f)
+        wf = data.get("workflow", data)
+        meta = data.get("meta", {})
+        if not is_api_format(wf):
+            print("✗ 指定的 workflow 不是 API 格式。")
+            print("  使用 ComfyUI 前端: app.loadGraphData() → app.graphToPrompt() 转换。")
+            return 1
+        print(f"[wf] 从文件加载: {wf_path.name} ({len(wf)} nodes)")
+    else:
+        # Load from cache (or extract from server)
+        wf, meta = load_cached_workflow(name=wf_name, category="anime")
+        
+        if wf is None:
+            # Fall back to server extraction
+            print("[info] 本地缓存无 API 格式 workflow，尝试从服务器提取...")
+            model_filter = getattr(args, 'model', None) or config.get("model_filter")
+            wf, meta = load_or_extract_workflow(server, model_filter, force_extract=True)
     
     if wf is None:
         print("✗ 无法加载 workflow。请先运行 extract-all 或确保服务器有历史记录。")
@@ -540,7 +562,8 @@ def cmd_generate(args):
         print("  浏览器中打开 workflow → app.graphToPrompt() 可获取 API 格式。")
         return 1
     
-    print(f"[wf] {meta.get('models', ['?'])[0][:50]} ({meta.get('node_count', '?')} nodes)")
+    if not wf_path:
+        print(f"[wf] {meta.get('models', ['?'])[0][:50]} ({meta.get('node_count', '?')} nodes)")
     
     import copy
     wf = copy.deepcopy(wf)
@@ -603,15 +626,36 @@ def cmd_list_workflows(args):
         cat = json.load(f)
     
     catalog = cat.get("catalog", {})
+    total = cat.get("total", len(catalog))
     print(f"\n{'='*70}")
-    print(f"  已缓存 {len(catalog)} 个 workflow (更新于 {cat.get('updated', '?')})")
+    print(f"  已缓存 {total} 个 workflow (更新于 {cat.get('updated', '?')})")
     print(f"{'='*70}")
     
-    for i, (fn, meta) in enumerate(sorted(catalog.items(), key=lambda x: -x[1].get("usage_count", 0))):
+    # Also check for standalone API workflow file
+    api_wf_path = STATE_DIR / "yume_api_workflow.json"
+    if api_wf_path.exists():
+        with open(api_wf_path) as f:
+            api_wf = json.load(f)
+        nodes = len(api_wf) if isinstance(api_wf, dict) else '?'
+        print(f"\n  [API] yume_api_workflow.json — novaAnimeXL_ilV170 ({nodes} nodes, 随时可用)")
+        print(f"       用法: python .bootstrap/scripts/comfyui_helper.py generate --workflow-path .bootstrap/state/yume_api_workflow.json --prompt \"...\"")
+    
+    # Sort: by usage_count if available, else alphabetically
+    def sort_key(item):
+        fn, meta = item
+        return -meta.get("usage_count", 0) if "usage_count" in meta else 0
+    
+    for i, (fn, meta) in enumerate(sorted(catalog.items(), key=sort_key)):
+        # Handle both catalog formats
+        wf_type = meta.get("type") or meta.get("cat", "unknown")
+        models = meta.get("models", [])
         ks = meta.get("ksampler_defaults", {})
-        print(f"\n  [{i+1}] {meta['type']}")
-        print(f"      模型: {', '.join(meta['models'][:3])}")
-        print(f"      使用: {meta['usage_count']} 次 | 分辨率: {meta.get('resolution', 'N/A')}")
+        
+        print(f"\n  [{i+1}] {wf_type}")
+        if models:
+            print(f"      模型: {', '.join(str(m)[:50] for m in models[:3])}")
+        print(f"      使用: {meta.get('usage_count', 0)} 次 | 分辨率: {meta.get('resolution', 'N/A')}")
+        print(f"      格式: {meta.get('fmt', meta.get('format', 'unknown'))}")
         if ks:
             print(f"      默认: {ks.get('steps','?')}steps cfg{ks.get('cfg','?')} {ks.get('sampler_name','?')}")
         print(f"      Prompt注入: {meta.get('prompt_injection_node', 'unknown')}")
@@ -802,6 +846,7 @@ def main():
     gen.add_argument("--sampler", help="采样器 (如 euler_ancestral)")
     gen.add_argument("--denoise", type=float, help="降噪强度 (img2img)")
     gen.add_argument("--model", help="按模型名过滤 workflow")
+    gen.add_argument("--workflow-path", help="直接指定 API 格式 workflow 文件路径")
     gen.add_argument("--force-extract", action="store_true", help="强制重新提取 workflow")
     gen.add_argument("--timeout", type=int, default=600, help="生成超时 (秒)")
     gen.add_argument("--output-dir", help="输出目录 (默认 images/)")
