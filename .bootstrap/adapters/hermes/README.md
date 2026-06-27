@@ -4,12 +4,11 @@ This adapter is packaged as a Hermes skill.
 
 ## Install
 
-Copy the `bootstrap` skill directory into the Hermes skills directory:
+Copy the `anime-girl-generator` skill directory into the Hermes skills directory:
 
 ```bash
-mkdir -p ~/.hermes/skills
-mkdir -p ~/.hermes/skills/bootstrap
-cp -R .bootstrap/adapters/hermes/bootstrap/. ~/.hermes/skills/bootstrap/
+mkdir -p ~/.hermes/skills/creative
+cp -R .bootstrap/adapters/hermes/anime-girl-generator/. ~/.hermes/skills/creative/anime-girl-generator/
 ```
 
 ## Entry
@@ -17,13 +16,13 @@ cp -R .bootstrap/adapters/hermes/bootstrap/. ~/.hermes/skills/bootstrap/
 Hermes should load:
 
 ```text
-~/.hermes/skills/bootstrap/SKILL.md
+~/.hermes/skills/creative/anime-girl-generator/SKILL.md
 ```
 
 Hermes help should read:
 
 ```text
-~/.hermes/skills/bootstrap/HELP.md
+~/.hermes/skills/creative/anime-girl-generator/HELP.md
 ```
 
 The skill delegates to the shared project package:

@@ -14,7 +14,7 @@ Normalize `comfyui_server` by removing a trailing slash before building API URLs
 ```bash
 SERVER=http://100.78.52.73:8188
 # 提交生成
-curl -s -X POST {SERVER}/prompt -H "Content-Type: application/json" -d '{"prompt":{JSON},"client_id":"bootstrap"}'
+curl -s -X POST {SERVER}/prompt -H "Content-Type: application/json" -d '{"prompt":{JSON},"client_id":"anime-girl-gen"}'
 # 查历史
 curl -s "{SERVER}/history/{ID}"
 # 下载

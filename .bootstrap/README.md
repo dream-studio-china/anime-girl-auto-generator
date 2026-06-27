@@ -52,8 +52,8 @@ Hermes standard skill package:
 
 ```bash
 mkdir -p ~/.hermes/skills
-mkdir -p ~/.hermes/skills/bootstrap
-cp -R .bootstrap/adapters/hermes/bootstrap/. ~/.hermes/skills/bootstrap/
+mkdir -p ~/.hermes/skills/creative
+cp -R .bootstrap/adapters/hermes/anime-girl-generator/. ~/.hermes/skills/creative/anime-girl-generator/
 ```
 
 ## Operating Model
@@ -99,10 +99,10 @@ pip install tweepy
 3. Use from opencode:
 
 ```text
-@bootstrap 生成图片
-@bootstrap 生成并发布
-@bootstrap 查趋势
-@bootstrap 分析报告
+@anime-girl-generator 生成图片
+@anime-girl-generator 生成并发布
+@anime-girl-generator 查趋势
+@anime-girl-generator 分析报告
 ```
 
 4. Publish only after review:

@@ -341,7 +341,7 @@ def main():
     history = load_history()
 
     if not history:
-        print("暂无发布记录。先用 @bootstrap 生成并发布 积累数据。")
+        print("暂无发布记录。先用 @anime-girl-generator 生成并发布 积累数据。")
         return
 
     # 需要最新 metrics 的命令先刷新

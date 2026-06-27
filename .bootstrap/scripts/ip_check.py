@@ -45,7 +45,7 @@ def _curl_get(url: str, timeout: int = 10) -> str:
     """简单 HTTP GET，不依赖第三方库。"""
     try:
         import urllib.request
-        req = urllib.request.Request(url, headers={"User-Agent": "bootstrap-ip-check/1.0"})
+        req = urllib.request.Request(url, headers={"User-Agent": "anime-girl-gen-ip-check/1.0"})
         with urllib.request.urlopen(req, timeout=timeout) as resp:
             return resp.read().decode("utf-8")
     except Exception as e:

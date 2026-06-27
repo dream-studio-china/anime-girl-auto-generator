@@ -1,9 +1,9 @@
 ---
-name: bootstrap
+name: anime-girl-generator
 description: Semi-automatic ComfyUI operations agent for image generation, trend research, and reviewed X/Twitter publishing.
 ---
 
-# Bootstrap Agent
+# Anime Girl Generator Agent
 
 Your entry instructions are in `.bootstrap/agent.md`. Read it immediately, then read the relevant runbooks and policies under `.bootstrap/docs/`.
 

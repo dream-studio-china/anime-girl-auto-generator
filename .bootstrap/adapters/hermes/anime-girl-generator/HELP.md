@@ -1,4 +1,4 @@
-# Bootstrap Agent
+# Anime Girl Generator
 
 快速生成动漫图片，可半自动发布到 X/Twitter。
 
@@ -14,12 +14,12 @@
 skill_manage action=create
 ```
 
-然后把 `.bootstrap/adapters/hermes/bootstrap/` 的内容复制到系统剪贴板，告诉 Hermes 粘贴即可。
+然后把 `.bootstrap/adapters/hermes/anime-girl-generator/` 的内容复制到系统剪贴板，告诉 Hermes 粘贴即可。
 
 或直接说：
 
 ```text
-安装 bootstrap skill
+安装 anime-girl-generator skill
 ```
 
 ### 2. 让 Hermes 出图
@@ -31,7 +31,7 @@ skill_manage action=create
 生成一张xxx的r15图
 ```
 
-Hermes 会自动加载 bootstrap skill 并调用 ComfyUI 出图。图片会自动存到 `images/`。
+Hermes 会自动加载 anime-girl-generator skill 并调用 ComfyUI 出图。图片会自动存到 `images/`。
 
 ### 3. 默认出图参数
 
