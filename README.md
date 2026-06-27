@@ -23,18 +23,21 @@
 .
 ├── opencode.json                    # opencode 项目配置
 ├── .opencode/
-│   └── agents/bootstrap.md          # opencode project subagent 入口
+│   └── agents/anime-girl-generator.md    # opencode project subagent 入口
 └── .bootstrap/
     ├── agent.md                     # 共享 agent 入口提示词
+    ├── HELP.md                      # 通用快速帮助
     ├── MANIFEST.md                  # agent 包元信息
     ├── README.md                    # bootstrap 包内部说明
     ├── tools.yaml                   # 跨框架工具映射
+    ├── backups/                     # 关键文件备份
     ├── config/runtime.json          # ComfyUI、X API、发布策略配置
     ├── state/history.json           # 生成和发布历史
     ├── prompts/caption_templates.md # caption 和 hashtag 模板
     ├── scripts/                     # 本地执行脚本
     ├── docs/                        # agent 规范、runbook、policy
     └── adapters/                    # Codex / Hermes / OpenClaw 适配
+        └── hermes/anime-girl-generator/ # Hermes skill 包
 ```
 
 ## 快速开始
@@ -55,7 +58,7 @@
 
 ### 默认 Workflow 预设
 
-默认使用 **X擦边女友专用 (yume_no_girl_x)** — 1080×1920 直出无 upscale，~2-3MB，约 12s。
+默认使用 **X擦边女友专用 (yume_no_girl_x)**，对应 `.bootstrap/state/yume_api_workflow.json`。当前该文件是 9 节点 API workflow，1080×1920 直出无 upscale，输出约 2-3MB。
 
 | 预设 | 配置 | 大小 | 用时 | 适用 |
 |------|------|------|------|------|
@@ -65,7 +68,7 @@
 生成示例：
 
 ```bash
-# 默认（noscale）
+# 默认（noscale，输出前缀 anime-txt2img）
 python .bootstrap/scripts/comfyui_helper.py generate \
   --workflow-path .bootstrap/state/yume_api_workflow.json \
   --prompt "1girl, anime style"
@@ -81,16 +84,16 @@ pip install tweepy
 
 ### 3. 在 opencode 中使用
 
-项目已通过 `.opencode/agents/bootstrap.md` 注册为 opencode project subagent。
+项目已通过 `.opencode/agents/anime-girl-generator.md` 注册为 opencode project subagent。
 
 常用命令：
 
 ```text
-@bootstrap 生成图片
-@bootstrap steps 40 cfg 5 生成
-@bootstrap 查趋势
-@bootstrap 生成并发布
-@bootstrap 分析报告
+@anime-girl-generator 生成图片
+@anime-girl-generator steps 40 cfg 5 生成
+@anime-girl-generator 查趋势
+@anime-girl-generator 生成并发布
+@anime-girl-generator 分析报告
 ```
 
 ## 半自动审核发布流程
@@ -153,24 +156,58 @@ ln -sf .bootstrap/adapters/codex/AGENTS.md AGENTS.md
 
 ## Hermes 使用方式
 
-Hermes 推荐以 skill 包形式安装：
+### 方式一：IM 安装（提供 git 地址，推荐）
+
+让 Hermes 从 git 仓库安装：
+
+```text
+从 https://github.com/dream-studio-china/anime-girl-auto-generator.git 安装 anime-girl-generator skill
+```
+
+Hermes 会 clone 仓库并安装 skill。**建议同时指定存放路径**，避免 agent 自行决定位置：
+
+```text
+安装 anime-girl-generator skill。地址 https://github.com/dream-studio-china/anime-girl-auto-generator.git，放到 ~/hermes-projects/
+```
+
+> ⚠️ **注意**：Hermes 没有内置的 git clone → skill 注册流程。这一步依赖 agent 的通用推理能力，不同 agent 的实现可能不同。建议用户主动指定项目路径，或采用方式三手动安装。
+
+### 方式二：IM 安装（手动告知路径）
+
+在聊天中告诉 Hermes：
+
+```text
+安装 anime-girl-generator skill
+```
+
+Hermes 会询问项目路径。将克隆下来的项目绝对路径告知即可，例如：
+
+```text
+我的项目在 /home/user/anime-girl-auto-generator
+```
+
+Hermes 应从 `{项目路径}/.bootstrap/adapters/hermes/anime-girl-generator/SKILL.md` 读取 skill 配置并完成安装。
+
+> ⚠️ **注意**：SKILL.md 中的 `{PROJECT}` 变量需要替换为你的实际项目路径。安装时 Hermes 会自动提示你设置。
+
+### 方式三：CLI 安装（推荐服务器/远程环境）
 
 ```bash
-mkdir -p ~/.hermes/skills
-mkdir -p ~/.hermes/skills/bootstrap
-cp -R .bootstrap/adapters/hermes/bootstrap/. ~/.hermes/skills/bootstrap/
+mkdir -p ~/.hermes/skills/creative
+mkdir -p ~/.hermes/skills/creative/anime-girl-generator
+cp -R .bootstrap/adapters/hermes/anime-girl-generator/. ~/.hermes/skills/creative/anime-girl-generator/
 ```
 
 Hermes 入口文件：
 
 ```text
-~/.hermes/skills/bootstrap/SKILL.md
+~/.hermes/skills/creative/anime-girl-generator/SKILL.md
 ```
 
 Hermes 帮助文件：
 
 ```text
-~/.hermes/skills/bootstrap/HELP.md
+~/.hermes/skills/creative/anime-girl-generator/HELP.md
 ```
 
 ## OpenClaw 使用方式
