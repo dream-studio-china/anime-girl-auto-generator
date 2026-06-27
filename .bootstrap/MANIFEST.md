@@ -6,33 +6,33 @@ bootstrap
 
 ## Version
 
-0.2.0
+0.3.0
 
 ## Architecture
 
-Thin prompt plus runbooks and policies.
+Thin prompt + runbooks + policies. Hermes native skill at `~/.hermes/skills/creative/bootstrap/`.
 
 ## Entry Points
 
 | Runtime | Entry |
 |---------|-------|
-| opencode | `.opencode/agents/bootstrap.md` |
-| shared prompt | `.bootstrap/agent.md` |
+| Hermes | `~/.hermes/skills/creative/bootstrap/SKILL.md` (primary) |
+| Shared prompt | `.bootstrap/agent.md` |
 | Codex | `.bootstrap/adapters/codex/AGENTS.md` |
-| Codex named agent config | `.bootstrap/adapters/codex/codex.yaml` |
-| Hermes | `.bootstrap/adapters/hermes/bootstrap/SKILL.md` |
 | OpenClaw | `.bootstrap/adapters/openclaw/IDENTITY.md` |
 
 ## Source Of Truth
 
 | Concern | File |
 |---------|------|
-| Behavior contract | `.bootstrap/docs/agent-spec.md` |
+| Behavior contract | `~/.hermes/skills/creative/bootstrap/SKILL.md` |
+| Runtime config | `.bootstrap/config/runtime.json` |
 | ComfyUI operations | `.bootstrap/docs/runbooks/comfyui.md` |
 | X reviewed publishing | `.bootstrap/docs/runbooks/x-publishing.md` |
 | Content policy | `.bootstrap/docs/policies/content.md` |
-| Runtime policy values | `.bootstrap/config/runtime.json` |
+| Caption templates | `.bootstrap/prompts/caption_templates.md` |
+| Image analysis | Ollama qwen3.5:9b / qwen2.5vl:7b @ 100.78.52.73:11434 |
 
 ## Safety Model
 
-Publishing is semi-automatic. Generation and analysis may be automated, but posting to X/Twitter requires a user-approved review card and `--reviewed` at the script layer.
+Publishing is semi-automatic. Generation and analysis may be automated, but posting to X/Twitter requires a user-approved review card and `--reviewed` at the script layer. Image analysis offloaded to local Ollama — main model tokens are never consumed for vision tasks.

@@ -9,32 +9,21 @@ Read `.bootstrap/config/runtime.json` for:
 
 Normalize `comfyui_server` by removing a trailing slash before building API URLs.
 
-## API Reference
+## API Reference (仅直接用法，完整 API 见表末)
 
-| Operation | Command |
-|-----------|---------|
-| List users | `curl -s {SERVER}/users` |
-| System stats | `curl -s {SERVER}/system_stats` |
-| List model types | `curl -s {SERVER}/models` |
-| List checkpoints | `curl -s {SERVER}/models/checkpoints` |
-| List LoRAs | `curl -s {SERVER}/models/loras` |
-| List VAEs | `curl -s {SERVER}/models/vae` |
-| Node info | `curl -s {SERVER}/object_info/{NODE_CLASS}` |
-| List workflows | `curl -s "{SERVER}/userdata?user={USER}&dir=workflows"` |
-| Fetch workflow | `curl -s "{SERVER}/userdata/{WORKFLOW}?user={USER}"` |
-| Submit prompt | `curl -s -X POST {SERVER}/prompt -H "Content-Type: application/json" -d '{"prompt":{WORKFLOW_JSON},"client_id":"bootstrap-agent"}'` |
-| Queue status | `curl -s {SERVER}/queue` |
-| Prompt history | `curl -s "{SERVER}/history/{PROMPT_ID}"` |
-| Download output | `curl -s -o "images/{FILENAME}" "{SERVER}/view?filename={F}&subfolder={S}&type=output"` |
+```bash
+SERVER=http://100.78.52.73:8188
+# 提交生成
+curl -s -X POST {SERVER}/prompt -H "Content-Type: application/json" -d '{"prompt":{JSON},"client_id":"bootstrap"}'
+# 查历史
+curl -s "{SERVER}/history/{ID}"
+# 下载
+curl -s -o "images/{FILE}" "{SERVER}/view?filename={F}&subfolder={S}&type=output"
+```
 
 ## First-Time Setup
 
-If `comfyui_server`, `default_user`, or `default_workflow` is missing:
-
-1. Ask for ComfyUI server URL.
-2. Call `/users` and ask user to choose a user.
-3. Call `/userdata?user={USER}&dir=workflows` and ask user to choose a workflow.
-4. Update `.bootstrap/config/runtime.json` while preserving existing keys.
+已配置完毕，无需操作。若 server/user/workflow 缺失，问用户即可。
 
 ## Default Generation
 
@@ -47,6 +36,7 @@ If `comfyui_server`, `default_user`, or `default_workflow` is missing:
 7. Download all image outputs into `images/`.
 8. Append a generation record to `.bootstrap/state/history.json`.
 9. Report output paths.
+10. 图片分析走 Ollama 本地模型 (qwen3.5:9b / qwen2.5vl:7b @ 100.78.52.73:11434)，禁止用主模型。
 
 ## Prompt Injection
 
@@ -87,20 +77,8 @@ Rules:
 
 ## Workflow Dependency Check
 
-For dependency checks:
-
-1. Parse loader nodes such as `CheckpointLoader`, `LoraLoader`, `VAELoader`, and ControlNet loaders.
-2. Compare model names against `/models/{type}` endpoints.
-3. Report installed, missing, and uncertain dependencies.
+用到时再查：对比 loader 节点中的模型名 vs `/models/{type}` 端点。
 
 ## Error Handling
 
-| Error | Action |
-|-------|--------|
-| Server unavailable | Ask user to check URL and ComfyUI process |
-| User missing | List users and ask again |
-| Workflow missing | List workflows and ask again |
-| Prompt submit error | Show ComfyUI `node_errors` or API error |
-| Long generation | Ask whether to keep waiting or interrupt after 5 minutes |
-| Download failure | Retry once, then report failed filename/subfolder |
-| Missing model | Report missing model and do not submit unless user confirms |
+Server 不可达 → 问用户检查。生成超时 5 分钟 → 问是否继续等。其余错误直接报原文。

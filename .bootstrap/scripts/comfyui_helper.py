@@ -273,28 +273,51 @@ def find_empty_latent_node(wf):
     return None
 
 
-def inject_params(wf, prompt=None, seed=None, steps=None, cfg=None, 
+def inject_params(wf, prompt=None, negative_prompt=None, seed=None, steps=None, cfg=None, 
                   width=None, height=None, sampler=None, denoise=None):
     """注入参数到 workflow"""
     changes = {}
     
     # Prompt injection
-    if prompt is not None:
-        node_id = find_prompt_node(wf)
-        if node_id:
-            old = wf[node_id]["inputs"].get("value", "")
-            wf[node_id]["inputs"]["value"] = prompt
-            changes["prompt"] = f"node={node_id}"
-        else:
-            print("[warn] 未找到 PrimitiveStringMultiline 节点，尝试 CLIPTextEncode...")
-            # Fallback: find CLIPTextEncode with "positive" in title
-            for nid, node in wf.items():
-                if isinstance(node, dict) and node.get("class_type") == "CLIPTextEncode":
-                    title = node.get("_meta", {}).get("title", "").lower()
-                    if "positive" in title or "prompt" in title:
-                        wf[nid]["inputs"]["text"] = prompt
-                        changes["prompt"] = f"node={nid} (CLIPTextEncode fallback)"
-                        break
+    if prompt is not None or negative_prompt is not None:
+        # Trace CLIPTextEncode nodes from KSampler
+        ksid = find_ksampler_node(wf)
+        pos_nid = neg_nid = None
+        if ksid:
+            ks_inputs = wf[ksid]["inputs"]
+            # positive: ["39", 0] → node 39
+            pos_ref = ks_inputs.get("positive")
+            neg_ref = ks_inputs.get("negative")
+            if isinstance(pos_ref, list) and len(pos_ref) >= 1:
+                pos_nid = str(pos_ref[0])
+            if isinstance(neg_ref, list) and len(neg_ref) >= 1:
+                neg_nid = str(neg_ref[0])
+        
+        if prompt is not None:
+            node_id = find_prompt_node(wf)
+            if node_id:
+                old = wf[node_id]["inputs"].get("value", "")
+                wf[node_id]["inputs"]["value"] = prompt
+                changes["prompt"] = f"node={node_id}"
+            elif pos_nid and pos_nid in wf and wf[pos_nid].get("class_type") == "CLIPTextEncode":
+                wf[pos_nid]["inputs"]["text"] = prompt
+                changes["prompt"] = f"node={pos_nid} (CLIPTextEncode via KSampler.positive)"
+            else:
+                print("[warn] 未找到 PrimitiveStringMultiline 节点，尝试 CLIPTextEncode...")
+                for nid, node in wf.items():
+                    if isinstance(node, dict) and node.get("class_type") == "CLIPTextEncode":
+                        title = node.get("_meta", {}).get("title", "").lower()
+                        if "positive" in title or "prompt" in title:
+                            wf[nid]["inputs"]["text"] = prompt
+                            changes["prompt"] = f"node={nid} (CLIPTextEncode fallback)"
+                            break
+        
+        if negative_prompt is not None:
+            if neg_nid and neg_nid in wf and wf[neg_nid].get("class_type") == "CLIPTextEncode":
+                wf[neg_nid]["inputs"]["text"] = negative_prompt
+                changes["negative_prompt"] = f"node={neg_nid} (CLIPTextEncode via KSampler.negative)"
+            else:
+                print("[warn] 未找到 negative CLIPTextEncode 节点")
     
     # KSampler params
     ksid = find_ksampler_node(wf)
@@ -573,6 +596,7 @@ def cmd_generate(args):
     changes = inject_params(
         wf,
         prompt=args.prompt,
+        negative_prompt=args.negative_prompt,
         seed=seed,
         steps=args.steps,
         cfg=args.cfg,
@@ -838,6 +862,7 @@ def main():
     # generate
     gen = sub.add_parser("generate", help="生成图片")
     gen.add_argument("--prompt", "-p", help="正向 prompt (如为空则使用默认)")
+    gen.add_argument("--negative-prompt", "-n", help="负向 prompt")
     gen.add_argument("--seed", type=int, help="种子 (默认随机)")
     gen.add_argument("--steps", type=int, help="采样步数")
     gen.add_argument("--cfg", type=float, help="CFG scale")

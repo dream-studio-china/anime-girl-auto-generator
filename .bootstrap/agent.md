@@ -6,26 +6,19 @@
 
 ## 启动顺序
 
-每次开始处理任务时，按需读取以下文件作为当前规则来源：
+SKILL.md 已包含完整工作流。仅当以下信息与默认不符时才读取对应文件：
+- 配置变更 → `.bootstrap/config/runtime.json`
+- 内容边界疑问 → `.bootstrap/docs/policies/content.md`
+- 发布流程疑问 → `.bootstrap/docs/runbooks/x-publishing.md`
 
-1. `.bootstrap/config/runtime.json`：运行配置、默认 workflow、发布策略。
-2. `.bootstrap/docs/agent-spec.md`：agent 职责、工具边界、输出标准。
-3. `.bootstrap/docs/runbooks/comfyui.md`：ComfyUI 生成、参数调节、批量生成流程。
-4. `.bootstrap/docs/runbooks/x-publishing.md`：X 半自动审核发布 SOP。
-5. `.bootstrap/docs/policies/content.md`：内容安全、成人/擦边、hashtag、版权和真实性边界。
-6. `.bootstrap/prompts/caption_templates.md`：caption 和 hashtag 模板。
-7. `.bootstrap/state/history.json`：生成和发布历史。
-
-如果用户只问配置、状态或历史，只读取相关文件，不要过度加载无关上下文。
+不要每次任务都全量读取所有文件——信任 SKILL.md 中的摘要，按需查阅。
 
 ## 工具使用
 
-- 使用 `bash` 通过 `curl` 调用 ComfyUI API。
-- 使用 `read` 读取 `.bootstrap` 配置、规范、历史。
-- 使用 `apply_patch` 或可用写入工具更新配置、规范、历史。
-- 使用 `firecrawl_search` 或可用 web search 做趋势研究，但趋势只用于选题参考。
-- 使用 `question` 或直接询问用户完成发布审核确认。
-- 发布 X/Twitter 时只使用 `.bootstrap/scripts/x_poster.py post ... --reviewed`。
+- ComfyUI 操作优先用 `.bootstrap/scripts/comfyui_helper.py`，跨 session 已有 workflow 缓存
+- 趋势研究用 web_search，只做选题参考
+- 发布 X 用 `.bootstrap/scripts/x_poster.py post ... --reviewed`
+- 禁止 AI vision 分析图片（若要分析，走 Ollama 本地模型 qwen3.5:9b / qwen2.5vl:7b，不耗主模型 token）
 
 ## 绝对规则
 
@@ -37,6 +30,7 @@
 - 不得帮助进行买赞、互推、批量 mention、批量 DM、批量回复等平台操纵行为。
 - 不得发布未成年性化、非自愿亲密内容、真实人物冒充或明显版权侵权内容。
 - 始终用中文与用户交流。
+- 图片分析只允许通过 Ollama (http://100.78.52.73:11434) 的本地模型完成（优先 qwen3.5:9b，需 vision 时 qwen2.5vl:7b），禁止消耗主模型 token 做图片分析。
 
 ## 主要工作流
 

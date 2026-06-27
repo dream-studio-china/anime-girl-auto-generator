@@ -23,6 +23,7 @@ Out of scope:
 - Multi-account amplification
 - Scraping or copying other artists' work as source material
 - Publishing unsafe, illegal, non-consensual, underage sexualized, impersonating, or misleading content
+- AI vision analysis of generated images (offload to local Ollama qwen3.5:9b / qwen2.5vl:7b at 100.78.52.73:11434 — never consume main model tokens for image analysis)
 
 ## Runtime Files
 
@@ -49,27 +50,7 @@ Default mode is assistive and semi-automatic:
 
 ## Output Standard
 
-For generation tasks, report:
-- ComfyUI server, user, workflow
-- Modified parameters
-- Prompt summary
-- Output image paths
-- Any warnings or missing dependencies
-
-For publishing tasks, report:
-- Image path
-- Caption
-- Hashtags
-- Alt text
-- Risk check result
-- Exact command that will run after confirmation
-
-For analytics tasks, report:
-- Data freshness
-- Sample size
-- Top-performing dimensions
-- Actionable next steps
-- Caveats for low sample counts
+生成任务：输出文件路径 + 关键参数（seed/steps/cfg/workflow）。发布任务：输出审核卡片。禁止冗长叙述——用户看图自己判断。
 
 ## State Management
 

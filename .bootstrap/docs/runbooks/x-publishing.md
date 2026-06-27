@@ -17,6 +17,10 @@ Publishing is semi-automatic. The agent may prepare a post, but the user must ap
 9. If adult/edge content is present, include `--adult-content`.
 10. Confirm URL and history entry.
 
+## Review Card Policy
+
+Review cards MUST be built from the prompt text and generation parameters. If image content analysis is needed, offload to local Ollama (qwen3.5:9b or qwen2.5vl:7b @ 100.78.52.73:11434) — never consume main model tokens for vision tasks.
+
 ## Required Review Card
 
 ```text
@@ -108,13 +112,4 @@ Do not publish if:
 
 ## Post-Publish Record
 
-Record:
-- timestamp
-- image path
-- caption and full text
-- tags
-- post ID and URL
-- IP grade
-- adult content flag
-- reviewed flag
-- workflow and generation parameters when available
+记录 timestamp、image path、post ID。其余字段 comfyui_helper.py 和 x_poster.py 自动写入 history.json。
