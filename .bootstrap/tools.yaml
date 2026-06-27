@@ -1,0 +1,39 @@
+# 跨框架工具名称映射表
+# 通用工具名 -> 各框架实际工具名
+# Agent 启动时自动检测当前框架并映射
+
+shell:
+  opencode: bash
+  codex: shell
+  openclaw: exec
+  hermes: bash
+
+search:
+  opencode: firecrawl_search
+  codex: web_search
+  openclaw: search
+  hermes: web_search
+
+fetch:
+  opencode: webfetch
+  codex: fetch_url
+  openclaw: fetch
+  hermes: fetch_url
+
+read:
+  opencode: read
+  codex: read_file
+  openclaw: read
+  hermes: read_file
+
+write:
+  opencode: write
+  codex: write_file
+  openclaw: write
+  hermes: write_file
+
+ask:
+  opencode: question
+  codex: ask_user
+  openclaw: ask
+  hermes: ask_user

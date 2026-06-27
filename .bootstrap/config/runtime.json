@@ -1,0 +1,25 @@
+{
+  "comfyui_server": "http://100.78.52.73:8188/",
+  "default_user": "immane",
+  "default_workflow": "X擦边女友专用 (yume_no_girl_x)",
+  "x_credentials": {
+    "api_key": "",
+    "api_secret": "",
+    "access_token": "",
+    "access_secret": "",
+    "bearer_token": ""
+  },
+  "x_defaults": {
+    "hashtags": ["animegirl", "AIart", "waifu", "animeillustration", "ComfyUI"],
+    "language": "bilingual",
+    "post_time": "auto"
+  },
+  "posting_policy": {
+    "mode": "semi_auto_review",
+    "daily_limit": 5,
+    "min_interval_minutes": 120,
+    "max_hashtags": 6,
+    "require_reviewed_flag": true,
+    "require_adult_content_confirmation": true
+  }
+}
