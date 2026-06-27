@@ -1,4 +1,6 @@
 images/*
 !images/.gitkeep
+.bootstrap/state/history.json
+.bootstrap/backups/*
 __pycache__/
 *.pyc

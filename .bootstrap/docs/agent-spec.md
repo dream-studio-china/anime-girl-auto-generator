@@ -50,7 +50,7 @@ Default mode is assistive and semi-automatic:
 
 ## Output Standard
 
-生成任务：输出文件路径 + 关键参数（seed/steps/cfg/workflow）。发布任务：输出审核卡片。禁止冗长叙述——用户看图自己判断。
+生成任务：输出到 `images/`（项目根目录下的 images 文件夹），并在 history.json 中记录。输出文件路径给用户。关键参数（seed/steps/cfg/workflow）一并提供。发布任务：输出审核卡片。禁止冗长叙述——用户看图自己判断。
 
 ## State Management
 

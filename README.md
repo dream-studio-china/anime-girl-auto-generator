@@ -157,13 +157,20 @@ Hermes 推荐以 skill 包形式安装：
 
 ```bash
 mkdir -p ~/.hermes/skills
-cp -R .bootstrap/adapters/hermes/bootstrap ~/.hermes/skills/bootstrap
+mkdir -p ~/.hermes/skills/bootstrap
+cp -R .bootstrap/adapters/hermes/bootstrap/. ~/.hermes/skills/bootstrap/
 ```
 
 Hermes 入口文件：
 
 ```text
 ~/.hermes/skills/bootstrap/SKILL.md
+```
+
+Hermes 帮助文件：
+
+```text
+~/.hermes/skills/bootstrap/HELP.md
 ```
 
 ## OpenClaw 使用方式

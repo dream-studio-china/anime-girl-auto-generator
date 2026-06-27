@@ -18,7 +18,7 @@ curl -s -X POST {SERVER}/prompt -H "Content-Type: application/json" -d '{"prompt
 # 查历史
 curl -s "{SERVER}/history/{ID}"
 # 下载
-curl -s -o "images/{FILE}" "{SERVER}/view?filename={F}&subfolder={S}&type=output"
+curl -s -o "{PROJECT_ROOT}/images/{FILE}" "{SERVER}/view?filename={F}&subfolder={S}&type=output"
 ```
 
 ## First-Time Setup
@@ -33,10 +33,10 @@ curl -s -o "images/{FILE}" "{SERVER}/view?filename={F}&subfolder={S}&type=output
 4. Parse `prompt_id`.
 5. Poll `/queue` every 2 seconds until the prompt is no longer running or pending.
 6. Fetch `/history/{prompt_id}`.
-7. Download all image outputs into `images/`.
-8. Append a generation record to `.bootstrap/state/history.json`.
-9. Report output paths.
-10. 图片分析走 Ollama 本地模型 (qwen3.5:9b / qwen2.5vl:7b @ 100.78.52.73:11434)，禁止用主模型。
+|7. Download all image outputs into `images/`（`{PROJECT_ROOT}/images/`）。
+|8. Append a generation record to `.bootstrap/state/history.json`，包括 `filename` 和相对路径 `location`。
+|9. 出图路径: `images/`，不要存到 `/tmp/`。
+|10. 图片分析走 Ollama 本地模型 (qwen3.5:9b / qwen2.5vl:7b @ 100.78.52.73:11434)，禁止用主模型。
 
 ## Prompt Injection
 

@@ -8,7 +8,8 @@ Copy the `bootstrap` skill directory into the Hermes skills directory:
 
 ```bash
 mkdir -p ~/.hermes/skills
-cp -R .bootstrap/adapters/hermes/bootstrap ~/.hermes/skills/bootstrap
+mkdir -p ~/.hermes/skills/bootstrap
+cp -R .bootstrap/adapters/hermes/bootstrap/. ~/.hermes/skills/bootstrap/
 ```
 
 ## Entry
@@ -17,6 +18,12 @@ Hermes should load:
 
 ```text
 ~/.hermes/skills/bootstrap/SKILL.md
+```
+
+Hermes help should read:
+
+```text
+~/.hermes/skills/bootstrap/HELP.md
 ```
 
 The skill delegates to the shared project package:

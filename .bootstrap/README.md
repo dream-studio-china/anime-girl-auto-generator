@@ -52,7 +52,8 @@ Hermes standard skill package:
 
 ```bash
 mkdir -p ~/.hermes/skills
-cp -R .bootstrap/adapters/hermes/bootstrap ~/.hermes/skills/bootstrap
+mkdir -p ~/.hermes/skills/bootstrap
+cp -R .bootstrap/adapters/hermes/bootstrap/. ~/.hermes/skills/bootstrap/
 ```
 
 ## Operating Model
