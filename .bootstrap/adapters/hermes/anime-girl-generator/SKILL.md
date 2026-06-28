@@ -313,6 +313,10 @@ extra digit, signature, watermark, patreon logo, artist name
 low quality, worst quality, lowres, ..., nsfw, nude, nipples, exposed, sex
 ```
 
+### 📎 场景构图 Prompt 参考
+
+见 `references/scene-composition-prompts.md` — 记录了用户确认的成熟场景模板（黄昏乡间归路、黄昏神社×樱花×校服少女等），以及多角度批量生成变体策略。
+
 ### 📎 角色 LoRA 工作流
 
 当用户需要生成特定动漫角色时，优先搜索并下载对应的 LoRA。当前已验证的 LoRA 工作流：
@@ -522,10 +526,10 @@ python {PROJECT_DIR}/.bootstrap/scripts/comfyui_helper.py list-workflows
 | width | EmptyLatentImage | inputs.width |
 | height | EmptyLatentImage | inputs.height |
 
-### 生成并发布（预发布流程）
+## 生成并发布（预发布流程）
 
 1. 先生成图片
-2. 准备 caption/hashtag（按 caption_templates.md）
+2. 准备 caption + hashtag + alt text（按 `{PROJECT_DIR}/.bootstrap/prompts/caption_templates.md`）
 3. 合规检查（内容政策）
 4. **字数检测 & 自动精简**：拼接最终文案（caption + hashtag），按账号类型检测上限
    - 免费：**280 字符** | X Basic：**4,000** | X Premium：**25,000**
@@ -534,32 +538,61 @@ python {PROJECT_DIR}/.bootstrap/scripts/comfyui_helper.py list-workflows
 5. **自动生成 X intent URL**（英文 caption + 英日 hashtag 拼接后用 `urllib.parse.quote()` URL encode；
    Telegram 必须以 `[点此打开 X 发布页](url)` Markdown 链接格式呈现）
 6. **自动将图片复制到剪贴板**（`osascript -e 'set the clipboard to (read POSIX file "..." as JPEG picture)'`）
-7. 展示审核卡片（**包含字数统计 + 可点击的 X Intent 链接 + 剪贴板状态**）：
+7. **运行风险检查**：
+   - 频次检测：读取 `{PROJECT_DIR}/.bootstrap/state/history.json` 最后一条记录的 timestamp，对比 `runtime.json` posting_policy.min_interval_minutes
+   - 重复检测：对比 history.json 已有记录的 caption/hashtag 组合
+   - 成人/擦边检测：依据 prompt 文本判断
+   - IP 质量检测：`python {PROJECT_DIR}/.bootstrap/scripts/ip_check.py --json`
+   - 标签相关性：检查 hashtag 是否与图片内容相关
+8. 展示完整审核卡片（格式见下方「审核卡片完整模板」）
+9. 用户确认后才执行发布
+
+### 审核卡片模板（用户确认格式）
+
+顺序: MEDIA → 风险检查表 → 发布审核摘要 → 代码块(caption+hashtags可点击复制) → X Intent 链接 → 底部说明
+
 ```text
-发布审核
-图片: images/xxx.png
-Caption: After school on the rooftop... the sunset painting the countryside gold
-Hashtag: #animegirl #AIart #sunset #夕焼け
-Alt text: AI generated anime girl artwork, schoolgirl on rooftop at sunset
-风险检查: 频率 OK / 无重复 / 成人内容: 否
-字数: 72/280 ✓
-📋 图片已复制到剪贴板 ✅
-🔗 X Intent: [点此打开 X 发布页](https://twitter.com/intent/tweet?text=...)
-发布命令: python {PROJECT}/.bootstrap/scripts/x_poster.py post ... --reviewed --proxy $HTTPS_PROXY
-下一步: 回复"确认发布"后才会发布到 X。
+MEDIA:{image_path}
+
+**风险检查**
+| 项目 | 结果 |
+|------|------|
+| 频率 | ✅ OK / 🔴 BLOCKED (Xm / 需120m) |
+| 每日限额 | ✅ OK / 🔴 BLOCKED (X/5) |
+| 成人/擦边 | ✅ 否 (SFW) / ⚠️ 是 |
+| IP | ✅ residential (IP) / ⚠️ proxy |
+| 标签相关性 | ✅ 匹配 |
+
+**发布审核**
+字数: N/280 ✓
+📋 剪贴板: ✅
+
 ```
+{caption + hashtags combined in one code block for Telegram copy button}
+```
+
+🔗 [点此打开 X 发布页](url)
+
+> API credits 耗尽 → 手动发布。点链接 → 粘贴图片 ✅
+```
+
+**规则**:
+- 风险检查表必须在发布审核上方
+- Caption 和 hashtag 合并到一个代码块（Telegram 代码块带复制按钮，方便用户一键复制全文）
+- 不显示图片文件名
+- 不拆分行显示 Caption/Hashtag/Alt text 为独立表行
+- 所有信息在一屏内扫完
 
 ### 发布前检查清单（必须逐项执行）
 
 | 检查项 | 说明 | 工具/方法 |
 |---|---|---|
-| 频次检测 | 检查距上次发布是否超过最小间隔（默认24h） | 读 history.json 最后一条记录的 timestamp |
-| 重复检测 | 检查 caption 或 hashtag 组合是否与历史记录重复 | 对比 history.json 已有记录的 caption/hashtag |
+| 频次检测 | 检查距上次发布是否超过最小间隔 | 读 history.json + runtime.json posting_policy |
+| 重复检测 | 检查 caption/hashtag 组合是否与历史重复 | 对比 history.json |
 | 成人/擦边检测 | 判断内容是否含裸露/性暗示，R15以上需标记 | 依据 prompt 文本判断 |
 | 剪贴板状态 | 图片是否成功复制到剪贴板 | `osascript` 返回码 |
-| IP 质量检测 | 检测出口 IP 是否为住宅 IP（VPS/代理 IP 发布 X 有封号风险） | `python .bootstrap/scripts/ip_check.py` |
-8. 用户确认后才执行发布
-
+| IP 质量检测 | 检测出口 IP 是否为住宅 IP | `python {PROJECT_DIR}/.bootstrap/scripts/ip_check.py` |
+| 标签相关性 | hashtag 是否与内容相关 | 对照 caption_templates.md Tier 分类 |
 ## 输出格式规范（用户偏好）
 
 用户明确要求：**不要在聊天中贴原始生成日志**。不要展示 `[wf]`、`[params]`、`[poll]`、`[download]`、`[submit]` 等后台输出。
@@ -667,6 +700,25 @@ python .bootstrap/scripts/comfyui_helper.py generate --workflow-path .bootstrap/
 ```
 
 注意：用 `background=true` 时每个进程独立提交到 ComfyUI 队列，不会互相等待。所有输出自动保存到 `{PROJECT_DIR}/images/`。
+
+### 🔄 增量迭代流程（推荐模式）
+
+用户的典型工作流：**概念测试 → 精炼 → 批量放大**。当用户描述一个场景时，不要直接生成大量图片。按以下顺序操作：
+
+**三阶段节奏**：
+| 阶段 | 数量 | 目的 | 用户行为特征 |
+|------|------|------|-------------|
+| ① 概念测试 | 1张 | 确认要素（场景、时间、构图）是否对路 | 用户看到后提修改意见 |
+| ② 精炼调整 | 1-3张 | 按反馈加细节（黄昏→仰视→黑色stocking等） | 用户逐轮加关键词 |
+| ③ 批量放大 | 4-10张 | 多角度/多姿势变体 | 用户说「再生成N张」 |
+
+**实现要点**：
+- 前两阶段每次只提交 1 个 prompt，快速出图让用户确认方向
+- 用户确认最终版本后，统一提取基底 prompt + 差异词表（变体模板）
+- 批量阶段同时提交 4-10 个 prompt（RTX 5070 Ti 可并行），统一轮询下载
+- 每张变体用中文场景名跟踪（如 `台阶仰望`, `花瓣环绕`, `鸟居入口`），方便用户后续指认
+
+**提示词命名惯例**：在批量阶段给每个变体起一个简短的中文关键词（`names = ["台阶风吹", "花瓣飞舞", "石灯背影", ...]`），输出时用它标识，用户后续通过视觉或名字选择要发布的图。
 
 ### 🔥 批量出图（execute_code 模式）【推荐】
 
