@@ -8,14 +8,16 @@ Publishing is semi-automatic. The agent may prepare a post, but the user must ap
 
 1. Generate or select an image.
 2. Generate caption, hashtags, and alt text.
-3. Run IP check: `python .bootstrap/scripts/ip_check.py --json`.
-4. Check `.bootstrap/state/history.json` for recent posts and duplicates.
-5. Apply `.bootstrap/config/runtime.json` `posting_policy`.
-6. Show the review card.
-7. Wait for explicit user confirmation.
-8. Publish with `.bootstrap/scripts/x_poster.py post ... --reviewed`.
-9. If adult/edge content is present, include `--adult-content`.
-10. Confirm URL and history entry.
+3. **Auto-generate X intent URL**: concatenate caption + hashtags, URL-encode with `urllib.parse.quote()`, format as `https://twitter.com/intent/tweet?text=...`
+4. **Auto-copy image to clipboard**: `osascript -e 'set the clipboard to (read POSIX file "images/xxx.png" as JPEG picture)'` (macOS)
+5. Run IP check: `python .bootstrap/scripts/ip_check.py --json`.
+6. Check `.bootstrap/state/history.json` for recent posts and duplicates.
+7. Apply `.bootstrap/config/runtime.json` `posting_policy`.
+8. Show the review card (must include clickable X Intent URL + clipboard confirmation).
+9. Wait for explicit user confirmation.
+10. Publish with `.bootstrap/scripts/x_poster.py post ... --reviewed`.
+11. If adult/edge content is present, include `--adult-content`.
+12. Confirm URL and history entry.
 
 ## Review Card Policy
 
@@ -29,13 +31,15 @@ Review cards MUST be built from the prompt text and generation parameters. If im
 Caption: ...
 Hashtag: #animegirl #AIart #ComfyUI
 Alt text: AI generated anime girl artwork, ...
+📋 图片已复制到剪贴板 ✅
+🔗 X Intent: https://twitter.com/intent/tweet?text=...
 风险检查:
 - 频率: OK / BLOCKED
 - 重复: OK / BLOCKED
 - 成人/擦边: 否 / 是，需要 --adult-content
 - IP: residential / mobile / business / hosting / proxy / unknown
 - 标签相关性: OK / 需修改
-下一步: 回复“确认发布”后我才会发布到 X。
+下一步: 回复"确认发布"后我才会发布到 X。
 ```
 
 ## Command Format

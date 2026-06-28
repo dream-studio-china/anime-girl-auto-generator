@@ -241,18 +241,22 @@ python {PROJECT}/.bootstrap/scripts/comfyui_helper.py extract-workflow --model n
 1. 先生成图片
 2. 准备 caption/hashtag（按 caption_templates.md）
 3. 合规检查（内容政策）
-4. 展示审核卡片：
-```
+4. **自动生成 X intent URL**（caption + hashtag 拼接后用 `urllib.parse.quote()` URL encode）
+5. **自动将图片复制到剪贴板**（`osascript -e 'set the clipboard to (read POSIX file "..." as JPEG picture)'`）
+6. 展示审核卡片（**包含可点击的 X Intent 链接**）：
+```text
 发布审核
 图片: images/xxx.png
 Caption: ...
 Hashtag: #animegirl #AIart #ComfyUI
 Alt text: AI generated anime girl artwork, ...
 风险检查: 频率 OK / 无重复 / 成人内容: 否
+📋 图片已复制到剪贴板 ✅
+🔗 X Intent: https://twitter.com/intent/tweet?text=...
 发布命令: python {PROJECT}/.bootstrap/scripts/x_poster.py post ... --reviewed
 下一步: 回复"确认发布"后才会发布到 X。
 ```
-5. 用户确认后才执行发布
+7. 用户确认后才执行发布
 
 ## 输出格式规范（用户偏好）
 
