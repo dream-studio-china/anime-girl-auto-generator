@@ -241,9 +241,10 @@ python {PROJECT}/.bootstrap/scripts/comfyui_helper.py extract-workflow --model n
 1. 先生成图片
 2. 准备 caption/hashtag（按 caption_templates.md）
 3. 合规检查（内容政策）
-4. **自动生成 X intent URL**（caption + hashtag 拼接后用 `urllib.parse.quote()` URL encode）
+4. **自动生成 X intent URL**（caption + hashtag 拼接后用 `urllib.parse.quote()` URL encode，字数超限时自动精简）
 5. **自动将图片复制到剪贴板**（`osascript -e 'set the clipboard to (read POSIX file "..." as JPEG picture)'`）
-6. 展示审核卡片（**包含可点击的 X Intent 链接**）：
+6. 展示审核卡片（**包含字数统计、可点击的 X Intent 链接、剪贴板状态**）：
+
 ```text
 发布审核
 图片: images/xxx.png
@@ -251,12 +252,23 @@ Caption: ...
 Hashtag: #animegirl #AIart #ComfyUI
 Alt text: AI generated anime girl artwork, ...
 风险检查: 频率 OK / 无重复 / 成人内容: 否
+字数: 198/280 ✓
 📋 图片已复制到剪贴板 ✅
-🔗 X Intent: https://twitter.com/intent/tweet?text=...
+🔗 X Intent: [点此打开 X 发布页](https://twitter.com/intent/tweet?text=...)
 发布命令: python {PROJECT}/.bootstrap/scripts/x_poster.py post ... --reviewed
 下一步: 回复"确认发布"后才会发布到 X。
 ```
 7. 用户确认后才执行发布
+
+## X 字数限制规则
+
+| 账号类型 | 单推上限 | 处理方式 |
+|---------|---------|---------|
+| 免费 | **280 字符** | 超出时自动精简 caption + 减少 hashtag |
+| X Basic | **4,000 字符** | 超出时自动截断/提示 |
+| X Premium | **25,000 字符** | 极少超限 |
+
+最终文案（caption + hashtag 拼接后）超出对应限制时，**禁止生成超长 intent URL**。必须执行自动精简策略（缩短 caption → 减少 hashtag → 删除冗余标点空格），审核卡片中标注字数统计 `(N/M 字符)`。
 
 ## 输出格式规范（用户偏好）
 

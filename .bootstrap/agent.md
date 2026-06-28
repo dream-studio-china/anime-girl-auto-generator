@@ -72,7 +72,18 @@ Alt text: AI generated anime girl artwork, ...
 下一步: 回复"确认发布"后我才会发布到 X。
 ```
 
-> **X intent URL 生成规则**：将 caption + hashtag 拼接为最终文案，用 `urllib.parse.quote()` 做 URL encode。Telegram 中必须以 Markdown 链接格式 `[点此打开 X 发布页](https://twitter.com/...)` 呈现，确保用户可直接点击。
+> **X intent URL 生成规则**：将 caption + hashtag 拼接为最终文案，用 `urllib.parse.quote()` 做 URL encode。Telegram 中必须以 Markdown 链接格式 `[点此打开 X 发布页](https://twitter.com/...)` 呈现，确保用户可直接点击。在审核卡片上标注 **字数统计** `(N/M 字符)`。
+>
+> **X 字数限制自动适配**（关键规则）：
+> - 免费账号：**280 字符**上限（中文/日文/韩文每个字算 2-3 字节，按 X 实际计数；英文/符号按 1 字符）
+> - X Basic：**4,000 字符**上限 | X Premium：**25,000 字符**上限
+> - 最终文案（caption + hashtag 拼接后）超出账号对应限制时，**禁止直接生成超长 intent URL**
+> - 超限处理策略（按优先级）：
+>   1. 优先缩短 caption 文本，保留核心信息
+>   2. 减少 hashtag 数量（保留最相关 2-3 个）
+>   3. 删除非必要的标点/空格/换行
+>   4. 以上仍超限时，在审核卡片中标注 `⚠️ 超限 N 字符，需手动精简`
+> - 生成 intent URL 前必须执行字数检测，超限的 URL 不生成。
 >
 > **剪贴板规则**：使用 macOS `osascript` 命令 `set the clipboard to (read POSIX file "/path/to/image.png" as JPEG picture)`，成功后输出 "✅ 图片已复制到剪贴板"。
 

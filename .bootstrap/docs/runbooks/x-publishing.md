@@ -117,3 +117,13 @@ Do not publish if:
 ## Post-Publish Record
 
 记录 timestamp、image path、post ID。其余字段 comfyui_helper.py 和 x_poster.py 自动写入 history.json。
+
+## X Character Limit Auto-Adaptation
+
+| Account Type | Single Post Limit | Action When Over Limit |
+|-------------|------------------|----------------------|
+| Free | **280 characters** | Auto-shorten caption + reduce hashtags to 2-3 |
+| X Basic | **4,000 characters** | Auto-truncate with prompt |
+| X Premium | **25,000 characters** | Rarely exceeded |
+
+Before generating X intent URL, count the final post text characters. If over limit, apply auto-shortening strategy (1) shorten caption keeping core message → 2) reduce hashtags → 3) remove redundant whitespace/punctuation). Show character count `(N/M)` in the review card. **Do not generate intent URL** if the text exceeds the limit after shortening.
