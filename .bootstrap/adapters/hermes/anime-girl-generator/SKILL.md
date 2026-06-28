@@ -538,16 +538,26 @@ python {PROJECT_DIR}/.bootstrap/scripts/comfyui_helper.py list-workflows
 ```text
 发布审核
 图片: images/xxx.png
-Caption: After school on the rooftop... the sunset painting the fields gold
+Caption: After school on the rooftop... the sunset painting the countryside gold
 Hashtag: #animegirl #AIart #sunset #夕焼け
 Alt text: AI generated anime girl artwork, schoolgirl on rooftop at sunset
 风险检查: 频率 OK / 无重复 / 成人内容: 否
 字数: 72/280 ✓
 📋 图片已复制到剪贴板 ✅
 🔗 X Intent: [点此打开 X 发布页](https://twitter.com/intent/tweet?text=...)
-发布命令: python {PROJECT}/.bootstrap/scripts/x_poster.py post ... --reviewed
+发布命令: python {PROJECT}/.bootstrap/scripts/x_poster.py post ... --reviewed --proxy $HTTPS_PROXY
 下一步: 回复"确认发布"后才会发布到 X。
 ```
+
+### 发布前检查清单（必须逐项执行）
+
+| 检查项 | 说明 | 工具/方法 |
+|---|---|---|
+| 频次检测 | 检查距上次发布是否超过最小间隔（默认24h） | 读 history.json 最后一条记录的 timestamp |
+| 重复检测 | 检查 caption 或 hashtag 组合是否与历史记录重复 | 对比 history.json 已有记录的 caption/hashtag |
+| 成人/擦边检测 | 判断内容是否含裸露/性暗示，R15以上需标记 | 依据 prompt 文本判断 |
+| 剪贴板状态 | 图片是否成功复制到剪贴板 | `osascript` 返回码 |
+| IP/代理检测 | xurl 发布必须有 HTTPS_PROXY 设置 | 确认环境变量 `HTTPS_PROXY=http://127.0.0.1:7897` |
 8. 用户确认后才执行发布
 
 ## 输出格式规范（用户偏好）
