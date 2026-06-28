@@ -7,8 +7,6 @@
 ### 日常发布 (Daily)
 ```
 ✨ {character_desc} — {mood_keyword}
-Generated with AI + ComfyUI workflow
-{workflow_name}
 ```
 
 ### 日英双语 (Bilingual)
@@ -36,7 +34,7 @@ Let me know in the comments!
 Workflow: {workflow_name}
 Model: {model_name}
 Seed: {seed} | Steps: {steps} | CFG: {cfg}
-#ComfyUI #AIart #workflow
+#AIart
 ```
 
 ---
@@ -69,7 +67,7 @@ Seed: {seed} | Steps: {steps} | CFG: {cfg}
 
 ### Tier 4 — AI 社区
 ```
-#ComfyUI #stablediffusion #AIイラスト #AIartwork
+#stablediffusion #AIイラスト #AIartwork
 ```
 
 ### 日本向 (JP audience)
@@ -95,5 +93,5 @@ Seed: {seed} | Steps: {steps} | CFG: {cfg}
 ```
 夏の夕暮れ、金色のポニーテール 🌅
 Golden hour by the sea — summer vibes
-#animegirl #swimsuit #summeranime #AIart #ComfyUI
+#animegirl #swimsuit #summeranime #AIart
 ```

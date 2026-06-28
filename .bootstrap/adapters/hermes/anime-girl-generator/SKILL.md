@@ -647,6 +647,7 @@ MEDIA:/path/to/file.png
 
 ## 绝对规则
 
+- **Caption 禁止内容**: 发布的 caption 中不得出现 `Generated with AI`、`ComfyUI`、`#ComfyUI` 等工具相关信息。用户不需要知道图片是什么生成的，只展示画面内容本身。
 - 未经用户确认，不得发布到 X/Twitter
 - 发布命令必须带 `--reviewed`
 - 擦边/成人内容必须带 `--adult-content`，先提醒用户确认 X 敏感媒体设置

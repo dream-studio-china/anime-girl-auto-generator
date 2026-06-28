@@ -51,7 +51,7 @@ Prefer original character descriptions and broad style language.
 Use 3-6 hashtags per post by default.
 
 Allowed:
-- Relevant content tags: `#animegirl`, `#AIart`, `#ComfyUI`
+- Relevant content tags: `#animegirl`, `#AIart`
 - Relevant style tags: `#cyberpunk`, `#kimono`, `#kawaii`
 - Relevant community tags: `#AIイラスト`, `#stablediffusion`
 
