@@ -557,7 +557,7 @@ Alt text: AI generated anime girl artwork, schoolgirl on rooftop at sunset
 | 重复检测 | 检查 caption 或 hashtag 组合是否与历史记录重复 | 对比 history.json 已有记录的 caption/hashtag |
 | 成人/擦边检测 | 判断内容是否含裸露/性暗示，R15以上需标记 | 依据 prompt 文本判断 |
 | 剪贴板状态 | 图片是否成功复制到剪贴板 | `osascript` 返回码 |
-| IP/代理检测 | xurl 发布必须有 HTTPS_PROXY 设置 | 确认环境变量 `HTTPS_PROXY=http://127.0.0.1:7897` |
+| IP 质量检测 | 检测出口 IP 是否为住宅 IP（VPS/代理 IP 发布 X 有封号风险） | `python .bootstrap/scripts/ip_check.py` |
 8. 用户确认后才执行发布
 
 ## 输出格式规范（用户偏好）
