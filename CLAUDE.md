@@ -7,10 +7,10 @@ All files related to this project **MUST** be stored inside the project director
 ### ✅ Allowed locations
 | Purpose | Path |
 |---------|------|
-| Scripts & code | `{PROJECT_DIR}/` |
+| Project code (shared) | `{PROJECT_DIR}/` |
 | Generated images | `{PROJECT_DIR}/images/daily/` |
 | Workflow configs | `{PROJECT_DIR}/.bootstrap/state/` |
-| Temporary files | `/tmp/` |
+| Temporary/anonymous scripts | `/tmp/hermes-projects/anime-girl-skill/` |
 
 ### ❌ Prohibited
 - `~/` — no scripts, no temp files, no output files
@@ -32,8 +32,8 @@ All files related to this project **MUST** be stored inside the project director
 
 ## Scripts
 
-- `daily_generate.py` — auto-detects PROJECT_DIR from `__file__`, no hardcoded paths
-- Use `daily_generate.py` for cron jobs, not manual `execute_code` workflow manipulation
+- `daily_generate.py` — lives in `/tmp/hermes-projects/anime-girl-skill/`, auto-detects PROJECT_DIR from environment
+- Use `python3 /tmp/hermes-projects/anime-girl-skill/daily_generate.py` for cron jobs, not manual `execute_code` workflow manipulation
 
 ## Cron Jobs
 
