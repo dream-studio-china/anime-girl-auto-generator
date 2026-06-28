@@ -4,3 +4,4 @@ images/*
 .bootstrap/backups/*
 __pycache__/
 *.pyc
+.obsidian/workspace.json
