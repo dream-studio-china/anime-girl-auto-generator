@@ -8,7 +8,8 @@ All files related to this project **MUST** be stored inside the project director
 | Purpose | Path |
 |---------|------|
 | Project code (shared) | `{PROJECT_DIR}/` |
-| Generated images | `{PROJECT_DIR}/images/daily/` |
+| Generated images (interactive) | `{PROJECT_DIR}/images/` |
+| Daily batch images (cron) | `{PROJECT_DIR}/images/daily/` |
 | Workflow configs | `{PROJECT_DIR}/.bootstrap/state/` |
 | Temporary/anonymous scripts | `/tmp/hermes-projects/anime-girl-skill/` |
 
