@@ -85,7 +85,7 @@ curl -s -o "{PROJECT_DIR}/images/{FILE}" "{SERVER}/view?filename={F}&subfolder={
 - `references/default-generation-config.md` — 用户的默认生图配置（1080x1920 无 upscale）。
 - `references/flux2-oom-workaround.md` — Flux.2-klein KV 编辑显存不足的修复方法（经验证：16GB VRAM 可运行）。
 - `references/editor-to-api-conversion.md` — Editor 格式 → API 格式 workflow 转换方法（含子图展开）。
-- `references/flux-clip-compatibility.md` — Flux 模型 CLIP 兼容性表（RedCraft vs Flux.2 vs 标准 Flux）。
+- `references/download-url-encoding.md` — 中文 filename_prefix 下载 URI 编码问题和修复。
 
 ### 📎 Flux CLIP 快速参考
 
@@ -422,7 +422,8 @@ print(file=sys.stderr)
 os.makedirs(f"{PROJECT}/images", exist_ok=True)
 for node_id, node_out in hist[prompt_id].get("outputs", {}).items():
     for img in node_out.get("images", []):
-        url = f"{SERVER}/view?filename={img['filename']}&subfolder={img.get('subfolder','')}&type={img.get('type','output')}"
+        params = urllib.parse.urlencode({"filename": img["filename"], "subfolder": img.get("subfolder", ""), "type": img.get("type", "output")})
+        url = f"{SERVER}/view?{params}"
         local = f"{PROJECT}/images/{img['filename']}"
         with urllib.request.urlopen(urllib.request.Request(url), timeout=60) as src, open(local, "wb") as dst:
             dst.write(src.read())
@@ -530,18 +531,18 @@ python {PROJECT_DIR}/.bootstrap/scripts/comfyui_helper.py list-workflows
    - 免费：**280 字符** | X Basic：**4,000** | X Premium：**25,000**
    - 超限时自动精简：缩短 caption → 减少 hashtag（保留最相关 2-3 个）→ 删冗余空格/标点/换行
    - 仍超限时标注 `⚠️ 超限 N 字符，需手动精简`，**不生成 intent URL**
-5. **自动生成 X intent URL**（caption + hashtag 拼接后用 `urllib.parse.quote()` URL encode；
+5. **自动生成 X intent URL**（英文 caption + 英日 hashtag 拼接后用 `urllib.parse.quote()` URL encode；
    Telegram 必须以 `[点此打开 X 发布页](url)` Markdown 链接格式呈现）
 6. **自动将图片复制到剪贴板**（`osascript -e 'set the clipboard to (read POSIX file "..." as JPEG picture)'`）
 7. 展示审核卡片（**包含字数统计 + 可点击的 X Intent 链接 + 剪贴板状态**）：
 ```text
 发布审核
 图片: images/xxx.png
-Caption: ...
-Hashtag: #animegirl #AIart #ComfyUI
-Alt text: AI generated anime girl artwork, ...
+Caption: After school on the rooftop... the sunset painting the fields gold
+Hashtag: #animegirl #AIart #sunset #夕焼け
+Alt text: AI generated anime girl artwork, schoolgirl on rooftop at sunset
 风险检查: 频率 OK / 无重复 / 成人内容: 否
-字数: 187/280 ✓
+字数: 72/280 ✓
 📋 图片已复制到剪贴板 ✅
 🔗 X Intent: [点此打开 X 发布页](https://twitter.com/intent/tweet?text=...)
 发布命令: python {PROJECT}/.bootstrap/scripts/x_poster.py post ... --reviewed
@@ -719,8 +720,9 @@ for name, pid in jobs:
     hdata = json.loads(hresp.read().decode())
     for node_out in hdata.get(pid, {}).get("outputs", {}).values():
         for img in node_out.get("images", []):
-            url = f"{SERVER}/view?filename={img['filename']}&subfolder={img.get('subfolder','')}&type={img.get('type','output')}"
-            local = f"{OUTDIR}/daily_{name}.png"
+            params = urllib.parse.urlencode({"filename": img["filename"], "subfolder": img.get("subfolder", ""), "type": img.get("type", "output")})
+            url = f"{SERVER}/view?{params}"
+            local = f"{OUTDIR}/{name}.png"
             urllib.request.urlretrieve(url, local)
             # 可选：加滤镜
             pil = Image.open(local)
